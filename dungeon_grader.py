@@ -1,10 +1,11 @@
+from tkinter.ttk import Style
 from bs4 import BeautifulSoup
 import requests
 
 # Function to grade a dungeon map URL
 def grade_dungeon_map(url, student_name, assignment_name):
     feedback = []
-    total_score = 40  # Starting from full score
+    total_score = 50  # Starting from full score
 
     try:
         # Fetch the website HTML with SSL verification disabled
@@ -18,7 +19,9 @@ def grade_dungeon_map(url, student_name, assignment_name):
         first_table = soup.find('table')
         if first_table:
             rows = first_table.find_all('tr')
-            if len(rows) >= 5 and all(len(row.find_all(['td', 'th'])) >= 5 for row in rows[:5]):
+            valid_rows = [row for row in rows if len(row.find_all(['td', 'th'])) >= 5]
+
+            if len(valid_rows) >= 5:
                 # Check for an image inside the table
                 image = first_table.find('img')
                 if not image:
@@ -32,8 +35,13 @@ def grade_dungeon_map(url, student_name, assignment_name):
                     total_score -= 5
 
                 # Check for background colors, font colors, or other styles
-                styles = first_table.get('style') or any(cell.get('style') for cell in first_table.find_all(['td', 'th']))
-                if not styles:
+                has_style = (
+                    first_table.get("style")
+                    or first_table.get("bgcolor")
+                    or any(cell.get("style") or cell.get("bgcolor")
+                           for cell in first_table.find_all(["td", "th"]))
+                )
+                if not Style:
                     feedback.append("First table is missing background or font styles. ~~ ")
                     total_score -= 5
             else:

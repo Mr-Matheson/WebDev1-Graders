@@ -1,5 +1,7 @@
-/24-25_Tri2
+/.idea
+/.venv
+/.vscode
 /__pycache__
+/24-25_Tri2
 /build
 /dist
-/.vscode
