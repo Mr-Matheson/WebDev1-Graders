@@ -150,3 +150,9 @@ grading_results_csv_path = os.path.join(extraction_path, 'grading_results.csv')
 grading_results_df.to_csv(grading_results_csv_path)
 
 print(f"Grading results saved to: {grading_results_csv_path}")
+
+
+def grade_heading_hr(url, student_name, assignment_name):
+    feedback = []
+    total_score = 0  # Maximum score based on rubric
+    return total_score, feedback

@@ -4,3 +4,5 @@ selenium
 pygetwindow
 requests
 urllib3
+
+webdriver-manager

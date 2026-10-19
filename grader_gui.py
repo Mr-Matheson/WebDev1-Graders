@@ -9,15 +9,21 @@ from dungeon_grader import grade_dungeon_map
 from test_part_2_grader import grade_html_test_part_2
 from my_first_webpage_grader import grade_my_first_webpage
 from my_second_webpage_grader import grade_my_second_webpage
+from heading_hr_grader import grade_heading_hr
+from volunteer_form_grader import grade_volunteer_form
+from final_project_grader import grade_final_project
 import threading
 
 # Grading functions list
 grading_functions = [
-    ("my first webpage", grade_my_first_webpage),
-    ("my second webpage", grade_my_second_webpage),
-    ("my first website", grade_my_first_website),
-    ("dungeon", grade_dungeon_map),
-    ("html test", grade_html_test_part_2),
+    ("1) My First Webpage", grade_my_first_webpage),
+    ("2) My Second Webpage", grade_my_second_webpage),
+    ("3) My First Website (COMING SOON)", grade_my_first_website),
+    ("4) Dungeon Map", grade_dungeon_map),
+    ("5) HTML Test Pt 2", grade_html_test_part_2),
+    ("6) Volunteer Form (COMING SOON)", grade_volunteer_form),
+    ("7) Headings and <hr> (COMING SOON)", grade_heading_hr),
+    ("8) Final Project (COMING SOON)", grade_final_project),
 ]
 
 class GradingApp:
