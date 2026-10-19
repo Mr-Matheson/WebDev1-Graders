@@ -120,9 +120,9 @@ def grade_html_test_part_2(url, student_name, assignment_name):
             task_score -= 2
         total_score += max(0, task_score)
 
-        # Overall organization & readability (4 pts)
+        # Task 8: Overall organization & readability (4 pts)
         task_score = 6
-        if not all(tag in content for tag in ['<body>', '<head>', '<html>']):
+        if not all(tag in content for tag in ['<body', '<head>', '<html>']):
             feedback.append("Code lacks proper organization and readability.")
             task_score -= 6
         total_score += max(0, task_score)

@@ -1,5 +1,5 @@
 # Overview
-This autograder is a useful tool for grading the assignments in the CCSDUT Shared Canvas Web Development sandbox. It currently supports the ***My First Webpage***, ***My Second Webpage***, and ***Dungeon Map*** assignments, although support is planned for ***My First Website***, ***HTML Test Part 2***, and the ***Final Project***.
+This autograder is a useful tool for grading the assignments in the CCSDUT Shared Web Development Canvas sandbox. It currently supports the ***My First Webpage***, ***My Second Webpage***, and ***Dungeon Map*** assignments, although support is planned for ***My First Website***, ***HTML Test Part 2***, and the ***Final Project***.
 
 ## Basic Usage
 When you run the autograder program, you'll be presented with a console window and a GUI. You can ignore the console, it's just for debugging purposes. The GUI looks like this:
@@ -24,8 +24,7 @@ It's critical that you match the submissions with the correct Assignment Autogra
 
 ## Compilation
 To package the autograder into a GUI-based standalone executable (named **AssignmentGrader.exe**), use the following command:
->pyinstaller -F -n AssignmentGrader --hidden-import=bs4 --hidden-import=selenium --hidden-import=pandas --hidden-import=pygetwindow --add-data "my_first_website_grader.py;." --add-data "utilities.py;." --add-data "auto_canvas.py;." --add-data "dungeon_grader.py;." --add-data "test_part_2_grader.py;." --add-data "my_first_webpage_grader.py;."
- --add-data "my_second_webpage_grader.py;." --add-binary "chromedriver.exe;." grader_gui.py
+>pyinstaller -F -n AssignmentGrader --hidden-import=bs4 --hidden-import=selenium --hidden-import=pandas --hidden-import=pygetwindow --add-data "my_first_website_grader.py;." --add-data "utilities.py;." --add-data "auto_canvas.py;." --add-data "dungeon_grader.py;." --add-data "test_part_2_grader.py;." --add-data "my_first_webpage_grader.py;." --add-data "final_project_grader.py;." --add-data "heading_hr_grader.py;." --add-data "volunteer_form_grader.py;." --add-data "my_second_webpage_grader.py;." --add-binary "chromedriver.exe;." grader_gui.py
 
 Unless you're already running in a virtual environment or you already have these dependencies installed, you can first install them all:
 >pip install requests beautifulsoup4 selenium pandas pygetwindow pyinstaller urllib3

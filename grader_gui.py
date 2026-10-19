@@ -37,16 +37,14 @@ class GradingApp:
         self.results_path = tk.StringVar()
         self.selected_grading_function = tk.StringVar()
         self.canvas_url = tk.StringVar()
-        self.username = tk.StringVar()  # New: Username variable
-        self.password = tk.StringVar()  # New: Password variable
         self.student_urls = {}
 
         # Register Chrome explicitly
-        self.chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+        self.chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"  # Default path, adjust if needed
         if os.path.exists(self.chrome_path):
             webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(self.chrome_path))
         else:
-            self.chrome_path = r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+            self.chrome_path = r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"  # Alternative path
             if os.path.exists(self.chrome_path):
                 webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(self.chrome_path))
 
@@ -71,7 +69,7 @@ class GradingApp:
         # Grading function selection
         ttk.Label(input_frame, text="Grading Function:").grid(row=2, column=0, padx=5, pady=5)
         grading_options = [name for name, _ in grading_functions]
-        self.grading_combo = ttk.Combobox(input_frame, textvariable=self.selected_grading_function, values=grading_options, state="readonly")
+        self.grading_combo = ttk.Combobox(input_frame, textvariable=self.selected_grading_function, values=grading_options, state="readonly", width=35)
         self.grading_combo.grid(row=2, column=1, padx=5, pady=5)
         self.grading_combo.set(grading_options[0])
 
@@ -79,20 +77,12 @@ class GradingApp:
         ttk.Label(input_frame, text="Canvas SpeedGrader URL:").grid(row=3, column=0, padx=5, pady=5)
         ttk.Entry(input_frame, textvariable=self.canvas_url, width=50).grid(row=3, column=1, padx=5, pady=5)
 
-        # Username input
-        ttk.Label(input_frame, text="Canvas Username:").grid(row=4, column=0, padx=5, pady=5)
-        ttk.Entry(input_frame, textvariable=self.username, width=50).grid(row=4, column=1, padx=5, pady=5)
-
-        # Password input (masked)
-        ttk.Label(input_frame, text="Canvas Password:").grid(row=5, column=0, padx=5, pady=5)
-        ttk.Entry(input_frame, textvariable=self.password, width=50, show="*").grid(row=5, column=1, padx=5, pady=5)
-
         # Run grading button
-        ttk.Button(input_frame, text="Run Grading", command=self.start_grading).grid(row=6, column=1, pady=10)
+        ttk.Button(input_frame, text="Run Grading", command=self.start_grading).grid(row=4, column=1, pady=10)
 
         # Progress bar
         self.progress = ttk.Progressbar(input_frame, mode='indeterminate', length=200)
-        self.progress.grid(row=7, column=1, pady=5)
+        self.progress.grid(row=5, column=1, pady=5)
         self.progress.grid_remove()
 
         # Results frame
@@ -208,16 +198,12 @@ class GradingApp:
             return
 
         canvas_url = self.canvas_url.get()
-        username = self.username.get()
-        password = self.password.get()
-
         if not canvas_url:
             messagebox.showerror("Error", "Please enter a Canvas SpeedGrader URL.")
             return
 
         try:
-            # Pass username and password to putGradesIn if provided
-            putGradesIn(self.grading_tuples, canvas_url, username, password)
+            putGradesIn(self.grading_tuples, canvas_url)
             messagebox.showinfo("Success", "Grades submitted to Canvas successfully.")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to submit grades to Canvas: {str(e)}")
@@ -235,9 +221,10 @@ class GradingApp:
             url = self.student_urls.get(student_name)
             if url:
                 try:
-                    if 'chrome' in webbrowser._browsers:
+                    if 'chrome' in webbrowser._browsers:  # Check if Chrome is registered
                         webbrowser.get('chrome').open(url)
                     else:
+                        # Fallback to default browser if Chrome isn’t available
                         webbrowser.open(url)
                         messagebox.showwarning("Browser Issue", "Chrome not found. Opening in default browser.")
                 except webbrowser.Error:

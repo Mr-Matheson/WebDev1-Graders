@@ -5,7 +5,7 @@ a = Analysis(
     ['grader_gui.py'],
     pathex=[],
     binaries=[('chromedriver.exe', '.')],
-    datas=[('my_first_website_grader.py', '.'), ('utilities.py', '.'), ('auto_canvas.py', '.'), ('dungeon_grader.py', '.'), ('test_part_2_grader.py', '.'), ('my_first_webpage_grader.py', '.'), ('my_second_webpage_grader.py', '.')],
+    datas=[('my_first_website_grader.py', '.'), ('utilities.py', '.'), ('auto_canvas.py', '.'), ('dungeon_grader.py', '.'), ('test_part_2_grader.py', '.'), ('my_first_webpage_grader.py', '.'), ('final_project_grader.py', '.'), ('heading_hr_grader.py', '.'), ('volunteer_form_grader.py', '.'), ('my_second_webpage_grader.py', '.')],
     hiddenimports=['bs4', 'selenium', 'pandas', 'pygetwindow'],
     hookspath=[],
     hooksconfig={},
