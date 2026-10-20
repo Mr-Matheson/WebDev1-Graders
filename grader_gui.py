@@ -1,7 +1,10 @@
 import tkinter as tk
+import pandas as pd
 from tkinter import filedialog, ttk, messagebox
 import os
 import webbrowser
+
+import utilities
 from my_first_website_grader import grade_my_first_website
 from utilities import grading_setup, grade_extracted_files
 from auto_canvas import putGradesIn
@@ -30,7 +33,7 @@ class GradingApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Assignment Grader")
-        self.root.geometry("800x600")
+        self.root.geometry("800x650")
 
         # Variables
         self.uploaded_file_path = tk.StringVar()
@@ -38,6 +41,7 @@ class GradingApp:
         self.selected_grading_function = tk.StringVar()
         self.canvas_url = tk.StringVar()
         self.student_urls = {}
+        self.grading_tuples = {}
 
         # Register Chrome explicitly
         self.chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"  # Default path, adjust if needed
@@ -69,21 +73,17 @@ class GradingApp:
         # Grading function selection
         ttk.Label(input_frame, text="Grading Function:").grid(row=2, column=0, padx=5, pady=5)
         grading_options = [name for name, _ in grading_functions]
-        self.grading_combo = ttk.Combobox(input_frame, textvariable=self.selected_grading_function, values=grading_options, state="readonly", width=35)
+        self.grading_combo = ttk.Combobox(input_frame, textvariable=self.selected_grading_function, values=grading_options, state="readonly", width=47)
         self.grading_combo.grid(row=2, column=1, padx=5, pady=5)
         self.grading_combo.set(grading_options[0])
-
-        # Canvas URL input
-        ttk.Label(input_frame, text="Canvas SpeedGrader URL:").grid(row=3, column=0, padx=5, pady=5)
-        ttk.Entry(input_frame, textvariable=self.canvas_url, width=50).grid(row=3, column=1, padx=5, pady=5)
-
-        # Run grading button
-        ttk.Button(input_frame, text="Run Grading", command=self.start_grading).grid(row=4, column=1, pady=10)
 
         # Progress bar
         self.progress = ttk.Progressbar(input_frame, mode='indeterminate', length=200)
         self.progress.grid(row=5, column=1, pady=5)
         self.progress.grid_remove()
+
+        # Run grading button
+        ttk.Button(input_frame, text="Run Grading", command=self.start_grading).grid(row=3, column=1, pady=10, padx=20)
 
         # Results frame
         results_frame = ttk.Frame(self.root, padding="10")
@@ -91,32 +91,48 @@ class GradingApp:
 
         # Treeview for results
         self.tree = ttk.Treeview(results_frame, columns=("Student", "Score", "Feedback"), show="headings", height=15)
-        self.tree.heading("Student", text="Student Name")
-        self.tree.heading("Score", text="Score")
-        self.tree.heading("Feedback", text="Feedback")
+        self.tree.heading("Student", text="Student Name", anchor="w")
+        self.tree.heading("Score", text="Score", anchor="w")
+        self.tree.heading("Feedback", text="Feedback", anchor="w")
         self.tree.column("Student", width=150)
         self.tree.column("Score", width=50)
-        self.tree.column("Feedback", width=500)
+        self.tree.column("Feedback", width=5000, minwidth=500)
         self.tree.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
-        # Scrollbar for Treeview
-        scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=self.tree.yview)
-        scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        self.tree.configure(yscrollcommand=scrollbar.set)
+        # Vertical Scrollbar for Treeview
+        v_scrollbar = ttk.Scrollbar(results_frame, orient="vertical", command=self.tree.yview)
+        v_scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        self.tree.configure(yscrollcommand=v_scrollbar.set)
+
+        # Horizontal Scrollbar for Treeview
+        h_scrollbar = ttk.Scrollbar(results_frame, orient="horizontal", command=self.tree.xview)
+        h_scrollbar.grid(row=1, column=0, sticky=(tk.W, tk.E))
+        self.tree.configure(xscrollcommand=h_scrollbar.set)
 
         # Context menu for right-click
         self.context_menu = tk.Menu(self.root, tearoff=0)
         self.context_menu.add_command(label="View URL in Chrome", command=self.view_url_in_chrome)
         self.tree.bind("<Button-3>", self.show_context_menu)
+        # Save to CSV file
+        ttk.Button(results_frame, text="Save results to CSV", command=self.save_to_csv).grid(row=2, column=0, pady=10, padx=20)
+
+        # Results frame
+        canvas_frame = ttk.Frame(self.root, padding="10")
+        canvas_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+
+        # Canvas URL input
+        ttk.Label(canvas_frame, text="Canvas SpeedGrader URL:").grid(row=3, column=0, padx=5, pady=5)
+        ttk.Entry(canvas_frame, textvariable=self.canvas_url, width=50).grid(row=3, column=1, padx=5, pady=5)
 
         # Submit to Canvas button
-        ttk.Button(results_frame, text="Submit to Canvas", command=self.submit_to_canvas).grid(row=1, column=0, pady=10)
+        ttk.Button(canvas_frame, text="Submit to Canvas", command=self.submit_to_canvas).grid(row=4, column=0, pady=10)
 
         # Make the window resizable
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(1, weight=1)
         input_frame.columnconfigure(1, weight=1)
         results_frame.columnconfigure(0, weight=1)
+        canvas_frame.columnconfigure(2, weight=1)
 
     def browse_zip(self):
         file_path = filedialog.askopenfilename(filetypes=[("Zip files", "*.zip")])
@@ -231,6 +247,16 @@ class GradingApp:
                     messagebox.showerror("Error", "Could not open Chrome. Ensure it’s installed or check the path.")
             else:
                 messagebox.showinfo("No URL", f"No valid URL found for {student_name}.")
+
+    def save_to_csv(self):
+        if self.grading_tuples:
+            grading_results_df = pd.DataFrame(self.grading_tuples)
+            grading_results_csv_path = os.path.join(self.results_path.get(), os.path.join('csv', 'grading_results.csv'))
+            grading_results_df.to_csv(grading_results_csv_path)
+            messagebox.showinfo("Success", "Results saved to CSV in Results Directory")
+        else:
+            messagebox.showinfo("Error", "Save to CSV failure")
+
 
 def extract_url_from_html(file_path):
     from bs4 import BeautifulSoup
