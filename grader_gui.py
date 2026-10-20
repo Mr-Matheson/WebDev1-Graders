@@ -83,7 +83,7 @@ class GradingApp:
         self.progress.grid_remove()
 
         # Run grading button
-        ttk.Button(input_frame, text="Run Grading", command=self.start_grading).grid(row=3, column=1, pady=10, padx=20)
+        ttk.Button(input_frame, text="Run Auto-Grader", command=self.start_grading).grid(row=3, column=1, pady=10, padx=20)
 
         # Results frame
         results_frame = ttk.Frame(self.root, padding="10")
@@ -125,7 +125,7 @@ class GradingApp:
         ttk.Entry(canvas_frame, textvariable=self.canvas_url, width=50).grid(row=3, column=1, padx=5, pady=5)
 
         # Submit to Canvas button
-        ttk.Button(canvas_frame, text="Submit to Canvas", command=self.submit_to_canvas).grid(row=4, column=0, pady=10)
+        ttk.Button(canvas_frame, text="Submit Grades and Scores to Canvas", command=self.submit_to_canvas).grid(row=4, column=0, pady=10)
 
         # Make the window resizable
         self.root.columnconfigure(0, weight=1)

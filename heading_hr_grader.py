@@ -153,6 +153,6 @@ from bs4 import BeautifulSoup
 
 
 def grade_heading_hr(url, student_name, assignment_name):
-    feedback = []
+    feedback = ["Autograder not implemented"]
     total_score = 0  # Maximum score based on rubric
     return total_score, feedback

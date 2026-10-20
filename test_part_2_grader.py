@@ -180,6 +180,8 @@ def grade_html_test_part_2(url, student_name, assignment_name):
         cssutils.log.setLevel("CRITICAL")  # Suppress nonessential cssutils warnings
 
         css_property_count = 0
+        table_styles = 0
+        image_styles = 0
 
         # Count the CSS properties across all inline styles
         internally_styled_elements = soup.find_all(style=True)
@@ -187,13 +189,22 @@ def grade_html_test_part_2(url, student_name, assignment_name):
             inline_css = element['style']
             parsed_style = cssutils.parseStyle(inline_css)
             css_property_count += parsed_style.length
+            if element.name in ["table", "tr", "th", "td"]:
+                table_styles += parsed_style.length
+            elif element.name == "img":
+                image_styles += parsed_style.length
 
         if internal_styles:
             # Count the CSS properties across all internal style element
             rules = cssutils.parseString(internal_styles.text)
             for rule in rules:
-                css_property_count += rule.style.length * len(rule.selectorText.split(",")) # Count properties multiple times for each selector if they're in a shared rule
-
+                # css_property_count += rule.style.length  # Count properties a single time, regardless of whether properties are shared by multilple selectors
+                for selector in rule.selectorText.replace(" ", "").split(","):
+                    css_property_count += rule.style.length  # Count properties multiple times for each selector even if they're in a shared rule
+                    if selector in ["table", "tr", "th", "td"]:
+                        table_styles += rule.style.length
+                    elif selector == "img":
+                        image_styles += rule.style.length
         if css_property_count < 10:
             feedback.append("Missing at least 4 additional styles (inline or internal) to enhance the appearance.")
             task_score -= 6
@@ -219,4 +230,4 @@ def grade_html_test_part_2(url, student_name, assignment_name):
 
 
 if __name__ == "__main__":
-    print(grade_html_test_part_2("http://smith.rhswebdev.com/CMVMPTN/html-test/", "", ""))
+    print(grade_html_test_part_2("http://smith.rhswebdev.com/GIZIROQ/html_test/", "", ""))

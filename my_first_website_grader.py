@@ -12,6 +12,10 @@ def grade_my_first_website(url, student_name, assignment_name):
     feedback = []
     total_score = 0  # Starting from zero, will add points based on rubric
 
+    feedback = ["Autograder not implemented"]
+    total_score = 0
+    return total_score, feedback
+
     try:
         # Strip trailing slash from the submitted URL for comparison
         url_for_comparison = strip_trailing_slash(url)

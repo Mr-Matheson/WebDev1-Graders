@@ -4,6 +4,6 @@ import re
 
 # Function to grade an HTML test part 2 assignment
 def grade_final_project(url, student_name, assignment_name):
-    feedback = []
+    feedback = ["Autograder not implemented"]
     total_score = 0  # Maximum score based on rubric
     return total_score, feedback
